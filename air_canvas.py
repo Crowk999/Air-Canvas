@@ -3,7 +3,7 @@ import numpy as np
 import mediapipe as mp
 from collections import deque
 
-# -------------------- Setup --------------------
+ 
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(
     max_num_hands=1,
@@ -26,7 +26,7 @@ colorIndex = 0
 # Canvas
 paintWindow = np.zeros((471, 636, 3), dtype=np.uint8) + 255
 
-# -------------------- Gesture Detection --------------------
+#  Gesture Detection
 hand_buffer = []
 
 def is_hand_open(hand_landmarks):
@@ -57,7 +57,7 @@ def stable_hand_open(hand_landmarks):
 
     return hand_buffer.count(True) >= 4
 
-# -------------------- UI Buttons --------------------
+# UI Buttons 
 def draw_buttons(frame):
     cv2.rectangle(frame, (40,1), (140,65), (0,0,0), 2)
     cv2.putText(frame, "CLEAR", (49,33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 2)
@@ -74,7 +74,7 @@ def draw_buttons(frame):
     cv2.rectangle(frame, (505,1), (600,65), (0,0,0), 2)
     cv2.putText(frame, "BLACK", (510,33), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 2)
 
-# -------------------- Webcam --------------------
+#  Webcam 
 cap = cv2.VideoCapture(0)
 
 while True:
@@ -96,7 +96,7 @@ while True:
 
             cv2.circle(frame, (x, y), 8, (0, 255, 255), -1)
 
-            # ---------------- Button Interaction ----------------
+            #  Button Interaction 
             if y <= 65:
                 if 40 <= x <= 140:
                     bpoints = [deque(maxlen=1024)]
@@ -116,7 +116,7 @@ while True:
                 elif 505 <= x <= 600:
                     colorIndex = 3
 
-            # ---------------- Drawing Logic ----------------
+            #  Drawing Logic 
             else:
                 if stable_hand_open(hand_landmarks):
                     if colorIndex == 0:
@@ -141,7 +141,7 @@ while True:
 
             mp_draw.draw_landmarks(frame, hand_landmarks, mp_hands.HAND_CONNECTIONS)
 
-    # ---------------- Draw Lines ----------------
+    # Draw Lines 
     points = [bpoints, gpoints, rpoints, kpoints]
     colors = [(255,0,0), (0,255,0), (0,0,255), (0,0,0)]
 
@@ -153,7 +153,7 @@ while True:
                 cv2.line(frame, points[i][j][k-1], points[i][j][k], colors[i], 5)
                 cv2.line(paintWindow, points[i][j][k-1], points[i][j][k], colors[i], 5)
 
-    # ---------------- Display ----------------
+    # Display
     cv2.imshow("Air Canvas", frame)
     cv2.imshow("Paint", paintWindow)
 
